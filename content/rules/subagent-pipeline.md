@@ -12,7 +12,7 @@ Full-cycle alone does **not** trigger the pipeline. The **standard path** for a 
 
 **Companion files:** `subagents.md` (catalog of subagents and when to delegate), `verification-checklist.md` (the closing gate of the pipeline), `orchestrator-economy.md` (optional project mode — `ORCHESTRATION=economy` in `.dev.env`, toggled by `/economymode` — makes stage 2/3 delegation the default and shifts bulk reads to subagents; stages and gates are unchanged).
 
-The pipeline is adapted from the `subagent-driven-development` skill of [obra/superpowers](https://github.com/obra/superpowers) and combined with the 13 specialized 1C subagents already shipped in `content/agents/`.
+The pipeline is adapted from the `subagent-driven-development` skill of [obra/superpowers](https://github.com/obra/superpowers) and combined with the 14 specialized 1C subagents already shipped in `content/agents/`.
 
 ## Why a fixed pipeline
 
@@ -85,7 +85,8 @@ The detailed promotion triggers (transactional paths, public exports, adopted ob
 Choose by task shape:
 
 - **`1c-analytic`** — when a written PRD / specification / area study is needed before any plan exists. Output: a written analysis, no code.
-- **`1c-explorer`** — for broad read-only mapping before the plan: locating related modules, metadata, entry points, dependencies, and callers. Use this project agent only — never the host built-in Explore / `explore` (`subagents.md → Host-tool built-in explorers`).
+- **`1c-explorer`** — for bounded read-only mapping before the plan: locating related modules, metadata, entry points, dependencies, and callers. Use this project agent only — never the host built-in Explore / `explore` (`subagents.md → Host-tool built-in explorers`).
+- **`1c-deep-research`** — optional Stage 1.5 for system-scale research before planning: whole subsystems, dozens of objects/modules, many extensions, global dependency/duplication synthesis. It performs MCP-first scoping, invokes the optional RLM sidecar, verifies load-bearing 1C facts, then returns a compressed research package. It is read-only and never replaces the planner/architect.
 - **`1c-architect`** — for new subsystems, multi-module designs, integrations, or extension boundaries. Output: an architecture document with module boundaries and data flow.
 - **`1c-arch-reviewer`** — when an architectural design already exists and needs validation before implementation.
 - **`1c-planner`** — for everything else that fits in one feature: produces a numbered task list.

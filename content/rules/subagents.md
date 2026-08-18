@@ -10,11 +10,12 @@ category: workflow
 
 ## Delegation principle
 
-13 specialized subagents are available in the project. Source prompt files live in `content/agents/` and use short file names without the `1c-` prefix:
+14 specialized subagents are available in the project. Source prompt files live in `content/agents/` and use short file names without the `1c-` prefix:
 
 | Subagent id | Source prompt file |
 |---|---|
 | `1c-explorer` | `content/agents/explorer.md` |
+| `1c-deep-research` | `content/agents/deep-research.md` |
 | `1c-analytic` | `content/agents/analytic.md` |
 | `1c-planner` | `content/agents/planner.md` |
 | `1c-architect` | `content/agents/architect.md` |
@@ -79,7 +80,7 @@ Canon — `AGENTS.md → Skills and Subagents`; exceptions only per `content/ski
 
 Canon — `content/rules/verification-checklist.md` (ordered hard gates: `syntaxcheck` → `check_1c_code` → `review_1c_code` → impact analysis → metadata XML validation, as applicable).
 
-**Subagent-specific:** for every mutated artifact, report each applicable validator's result and run count **after the final edit** — the parent reuses that evidence instead of repeating validators on unchanged content. Read-only agents (`1c-explorer`, `1c-analytic`, `1c-arch-reviewer`, `1c-code-reviewer`, `1c-doc-writer` when not writing project sources) skip the mutating gates and the metadata-skill gate but still follow CONFUSION and MCP-first search.
+**Subagent-specific:** for every mutated artifact, report each applicable validator's result and run count **after the final edit** — the parent reuses that evidence instead of repeating validators on unchanged content. Read-only agents (`1c-explorer`, `1c-deep-research`, `1c-analytic`, `1c-arch-reviewer`, `1c-code-reviewer`, `1c-doc-writer` when not writing project sources) skip the mutating gates and the metadata-skill gate but still follow CONFUSION and MCP-first search.
 
 Each agent prompt ends with a short **Common obligations** pointer to this section — keep that pointer in sync when editing this file.
 
@@ -87,7 +88,8 @@ Each agent prompt ends with a short **Common obligations** pointer to this secti
 
 | Subagent | When to call | When NOT to call |
 |---|---|---|
-| **1c-explorer** | Read-only exploration across many files, metadata objects, dependencies, or "where/how/who calls" questions before planning, coding, or refactoring. **Mandatory** for delegated exploration — never the host built-in Explore (see *Host-tool built-in explorers*) | Narrow lookup that the parent can answer with one direct read/search; host-tool Cursor-guide / docs lookup (not 1C project source) |
+| **1c-explorer** | Bounded read-only exploration across files, metadata objects, dependencies, or "where/how/who calls" questions before planning, coding, or refactoring. **Mandatory** for delegated bounded exploration — never the host built-in Explore | Narrow lookup that the parent can answer directly; system-scale synthesis that exceeds the thorough 25-call budget — use `1c-deep-research` |
+| **1c-deep-research** | Large-scale read-only synthesis across a subsystem, dozens of objects/modules, many extensions, or project-wide architecture/dependency questions. Uses the optional RLM sidecar after MCP-first scoping | Narrow/bounded lookup; ordinary coding; tasks where `1c-explorer` can answer within its budget |
 | **1c-analytic** | User asks for a PRD, specification, or analysis of an existing area without writing code | Task is to write code |
 | **1c-planner** | A multi-step implementation or refactoring plan is needed before coding | Task is small enough that the plan is 1–2 lines |
 | **1c-architect** | Designing the architecture of a sizable modification (new subsystem, integration, multi-module change) | Single-procedure or single-module change |
@@ -108,7 +110,7 @@ Subagent source files do **not** hard-code model names. Each agent declares an a
 The three tiers:
 
 - **`coding`** — code / metadata authorship and design: writing or editing BSL and metadata, architecture design. Agents: `1c-developer`, `1c-metadata-manager`, `1c-architect`, `1c-performance-optimizer`, `1c-refactoring`. Warrants the strongest model — this tier mutates production code.
-- **`analysis`** — reasoning without production-code authorship: planning, analysis, review, testing, documentation. Agents: `1c-planner`, `1c-analytic`, `1c-arch-reviewer`, `1c-code-reviewer`, `1c-doc-writer`, `1c-tester`. A strong-value model is usually enough.
+- **`analysis`** — reasoning without production-code authorship: planning, analysis, review, testing, documentation. Agents: `1c-deep-research`, `1c-planner`, `1c-analytic`, `1c-arch-reviewer`, `1c-code-reviewer`, `1c-doc-writer`, `1c-tester`. A strong-value model is usually enough.
 - **`light`** — small bounded tasks where a cheaper / faster model saves limits without hurting quality: repo scouting, search, impact lists, quick error fixes, mechanical post-edit checks. Agents: `1c-explorer`, `1c-error-fixer`.
 
 Routing rules:
